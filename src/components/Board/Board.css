@@ -1,0 +1,21 @@
+
+.board-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  width: 100%;
+}
+
+.board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+
+  width: min(60vw, 60vh, 520px);
+}
+
+.board > * {
+  aspect-ratio: 1 / 1;
+  min-width: 0;
+}
