@@ -1,6 +1,11 @@
 import "./Result.css";
 
-function Result({ onClick, moves }) {
+interface ResultProps {
+  moves: number;
+  onClick: () => void;
+}
+
+function Result({ onClick, moves }: ResultProps) {
   return (
     <div className="result-overlay">
       <div className="result-modal">

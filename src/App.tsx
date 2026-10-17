@@ -7,13 +7,9 @@ import { useState, useRef, useEffect, useCallback } from "react";
 
 function App() {
   const [resultVisible, setResultVisible] = useState<boolean>(false);
-  const [movesNumber, setMovesNumber] = useState(0);
-  const [gameWon, setGameWon] = useState(false);
+  const [movesNumber, setMovesNumber] = useState<number>(0);
+  const [gameWon, setGameWon] = useState<boolean>(false);
   const [shouldReset, setShouldReset] = useState(false);
-  const [mode, setMode] = useState<"one_player" | "second_player">(
-    "one_player",
-  );
-  const [activePlayer, setActivePlayer] = useState<number>(1);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -25,9 +21,8 @@ function App() {
     };
   }, []);
 
-  const resetCb = useCallback((cb) => {
+  const resetCb = useCallback((cb: () => void) => {
     if (timeoutRef.current) {
-      console.log("CLEAR TIMEOUT");
       clearTimeout(timeoutRef.current);
       timeoutRef.current = null;
     }
@@ -49,7 +44,7 @@ function App() {
           }
           onShowResult={() => setResultVisible(true)}
           onGameWon={() => setGameWon(true)}
-          onMismatch={(onMismatchCb) => {
+          onMismatch={(onMismatchCb: () => void) => {
             timeoutRef.current = setTimeout(() => {
               onMismatchCb();
             }, 2000);

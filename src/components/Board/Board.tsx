@@ -8,7 +8,43 @@ import {
 } from "../../utils/generateBoard";
 import { BoardReducer } from "../../reducer/BoardReducer";
 
-const initialBoardState = {
+export type BoardState = {
+  unhiddenTilesId: number[];
+  matchedTilesId: number[];
+  board: TileData[][];
+  boardLocked: boolean;
+};
+
+export type BoardAction =
+  | {
+      type: "reset";
+    }
+  | {
+      type: "first_unhidden";
+      tileId: number;
+    }
+  | {
+      type: "second_unhidden";
+      tileId: number;
+    }
+  | {
+      type: "match";
+      tileId: number;
+      unhiddenTile: number;
+    }
+  | { type: "mismatch"; tileId: number }
+  | { type: "mismatch_callback" };
+
+interface BoardProps {
+  shouldReset: boolean;
+  onReset: (cb: () => void) => void;
+  onMovesNumberChanged: () => void;
+  onShowResult: () => void;
+  onGameWon: () => void;
+  onMismatch: (cb: () => void) => void;
+}
+
+const initialBoardState: BoardState = {
   unhiddenTilesId: [],
   matchedTilesId: [],
   board: generateBoard(),
@@ -22,12 +58,12 @@ function Board({
   onShowResult,
   onGameWon,
   onMismatch,
-}) {
+}: BoardProps) {
   const [state, dispatch] = useReducer(BoardReducer, initialBoardState);
 
   const tilesNumber = 16;
-  const gameWon = state.matchedTilesId.length === tilesNumber;
-  const showResult = state.matchedTilesId.length === tilesNumber - 2;
+  const gameWon = state.matchedTilesId?.length === tilesNumber;
+  const showResult = state.matchedTilesId?.length === tilesNumber - 2;
 
   useEffect(() => {
     if (!shouldReset) return;
@@ -57,32 +93,22 @@ function Board({
   }
 
   function handleTileClick(tileId: number, tileEmoji: string) {
-    // board locked
     if (state.boardLocked) {
       return;
     }
     // dopiero pierwsza odkryta
-    if (state.unhiddenTilesId.length !== 1) {
+    if (state.unhiddenTilesId?.length !== 1) {
       dispatch({ type: "first_unhidden", tileId });
       return;
     }
     dispatch({ type: "second_unhidden", tileId });
 
     const [i, j] = idToIndices(state.unhiddenTilesId[0]);
-    console.log(
-      `jedna niedopasowana karta z id ${state.unhiddenTilesId[0]} jest już odkryta pod indeksami i:${i} j:${j}`,
-    );
     // wykryliśmy dopasowanie
     if (state.board[i][j].emoji === tileEmoji) {
-      console.log(
-        `wykryliśmy dopasowanie: board[i][j].emoji ${state.board[i][j].emoji} tileEmoji ${tileEmoji}`,
-      );
       handleMatch(tileId);
     } else {
       // nie ma dopasowania => pokazujemy oba przez 3 sekundy a potem zasłaniamy oba
-      console.log(
-        `nie ma dopasowania: board[i][j].emoji ${state.board[i][j].emoji} tileEmoji ${tileEmoji}`,
-      );
       handleMismatch(tileId);
     }
   }
@@ -97,8 +123,8 @@ function Board({
                 key={tile.id}
                 id={tile.id}
                 hidden={
-                  !state.unhiddenTilesId.includes(tile.id) &&
-                  !state.matchedTilesId.includes(tile.id)
+                  !state.unhiddenTilesId?.includes(tile.id) &&
+                  !state.matchedTilesId?.includes(tile.id)
                 }
                 locked={state.boardLocked}
                 onClick={() => {

@@ -1,8 +1,25 @@
+import type { ReactNode } from "react";
 import "./Tile.css";
 
 const hiddenEmoji = "❓";
 
-export default function Tile({ id, hidden, locked, onClick, win, children }) {
+interface TileProps {
+  id: number;
+  hidden: boolean;
+  locked: boolean;
+  onClick: () => void;
+  win: boolean;
+  children: ReactNode;
+}
+
+export default function Tile({
+  id,
+  hidden,
+  locked,
+  onClick,
+  win,
+  children,
+}: TileProps) {
   return (
     <>
       <button

@@ -1,6 +1,7 @@
 import { generateBoard } from "../utils/generateBoard";
+import { type BoardState, type BoardAction } from "../components/Board/Board";
 
-export function BoardReducer(state, action) {
+export function BoardReducer(state: BoardState, action: BoardAction): BoardState {
   switch (action.type) {
     case "reset":
       return {

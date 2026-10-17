@@ -1,6 +1,10 @@
 import "./MovesNumber.css";
 
-export function MovesNumber({ moves }) {
+interface MovesNumberProps {
+  moves: number;
+}
+
+export function MovesNumber({ moves }: MovesNumberProps) {
   return (
     <div className="moves-number">
       Ruchy:
