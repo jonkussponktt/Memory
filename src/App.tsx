@@ -10,6 +10,10 @@ function App() {
   const [movesNumber, setMovesNumber] = useState(0);
   const [gameWon, setGameWon] = useState(false);
   const [shouldReset, setShouldReset] = useState(false);
+  const [mode, setMode] = useState<"one_player" | "second_player">(
+    "one_player",
+  );
+  const [activePlayer, setActivePlayer] = useState<number>(1);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -22,8 +26,6 @@ function App() {
   }, []);
 
   const resetCb = useCallback((cb) => {
-    console.log("RESET, timeout =", timeoutRef.current);
-
     if (timeoutRef.current) {
       console.log("CLEAR TIMEOUT");
       clearTimeout(timeoutRef.current);
@@ -48,10 +50,7 @@ function App() {
           onShowResult={() => setResultVisible(true)}
           onGameWon={() => setGameWon(true)}
           onMismatch={(onMismatchCb) => {
-            console.log("CREATE TIMEOUT");
-
             timeoutRef.current = setTimeout(() => {
-              console.log("TIMEOUT FIRED");
               onMismatchCb();
             }, 2000);
           }}

@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react";
+import { useEffect, useReducer } from "react";
 import Tile from "../Tile/Tile";
 import "./Board.css";
 import {
@@ -6,6 +6,14 @@ import {
   type TileData,
   idToIndices,
 } from "../../utils/generateBoard";
+import { BoardReducer } from "../../reducer/BoardReducer";
+
+const initialBoardState = {
+  unhiddenTilesId: [],
+  matchedTilesId: [],
+  board: generateBoard(),
+  boardLocked: false,
+};
 
 function Board({
   shouldReset,
@@ -15,22 +23,16 @@ function Board({
   onGameWon,
   onMismatch,
 }) {
-  const [unhiddenTilesId, setUnhiddenTilesId] = useState<number[]>([]);
-  const [matchedTilesId, setMatchedTilesId] = useState<number[]>([]);
-  const [board, setBoard] = useState<TileData[][]>(() => generateBoard());
-  const [boardLocked, setBoardLocked] = useState<boolean>(false);
+  const [state, dispatch] = useReducer(BoardReducer, initialBoardState);
 
   const tilesNumber = 16;
-  const gameWon = matchedTilesId.length === tilesNumber;
-  const showResult = matchedTilesId.length === tilesNumber - 2;
+  const gameWon = state.matchedTilesId.length === tilesNumber;
+  const showResult = state.matchedTilesId.length === tilesNumber - 2;
 
   useEffect(() => {
     if (!shouldReset) return;
     onReset(() => {
-      setMatchedTilesId([]);
-      setUnhiddenTilesId([]);
-      setBoard(() => generateBoard());
-      setBoardLocked(false);
+      dispatch({ type: "reset" });
     });
   }, [shouldReset, onReset]);
 
@@ -42,53 +44,44 @@ function Board({
     if (showResult) {
       onShowResult();
     }
-    setMatchedTilesId((prevMatchedTilesId) => [
-      ...prevMatchedTilesId,
-      tileId,
-      unhiddenTilesId[0],
-    ]);
-    setUnhiddenTilesId([]);
-    setBoardLocked(false);
+    dispatch({ type: "match", tileId, unhiddenTile: state.unhiddenTilesId[0] });
     onMovesNumberChanged();
   }
 
   function handleMismatch(tileId: number) {
-    setUnhiddenTilesId((prevUnhiddenTilesId: number[]) => [
-      ...prevUnhiddenTilesId,
-      tileId,
-    ]);
+    dispatch({ type: "mismatch", tileId });
     onMismatch(() => {
-      setUnhiddenTilesId([]);
-      setBoardLocked(false);
+      dispatch({ type: "mismatch_callback" });
       onMovesNumberChanged();
     });
   }
 
   function handleTileClick(tileId: number, tileEmoji: string) {
     // board locked
-    if (boardLocked) {
+    if (state.boardLocked) {
       return;
     }
     // dopiero pierwsza odkryta
-    if (unhiddenTilesId.length !== 1) {
-      setUnhiddenTilesId([tileId]);
+    if (state.unhiddenTilesId.length !== 1) {
+      dispatch({ type: "first_unhidden", tileId });
       return;
     }
-    setBoardLocked(true);
-    const [i, j] = idToIndices(unhiddenTilesId[0]);
+    dispatch({ type: "second_unhidden", tileId });
+
+    const [i, j] = idToIndices(state.unhiddenTilesId[0]);
     console.log(
-      `jedna niedopasowana karta z id ${unhiddenTilesId[0]} jest już odkryta pod indeksami i:${i} j:${j}`,
+      `jedna niedopasowana karta z id ${state.unhiddenTilesId[0]} jest już odkryta pod indeksami i:${i} j:${j}`,
     );
     // wykryliśmy dopasowanie
-    if (board[i][j].emoji === tileEmoji) {
+    if (state.board[i][j].emoji === tileEmoji) {
       console.log(
-        `wykryliśmy dopasowanie: board[i][j].emoji ${board[i][j].emoji} tileEmoji ${tileEmoji}`,
+        `wykryliśmy dopasowanie: board[i][j].emoji ${state.board[i][j].emoji} tileEmoji ${tileEmoji}`,
       );
       handleMatch(tileId);
     } else {
       // nie ma dopasowania => pokazujemy oba przez 3 sekundy a potem zasłaniamy oba
       console.log(
-        `nie ma dopasowania: board[i][j].emoji ${board[i][j].emoji} tileEmoji ${tileEmoji}`,
+        `nie ma dopasowania: board[i][j].emoji ${state.board[i][j].emoji} tileEmoji ${tileEmoji}`,
       );
       handleMismatch(tileId);
     }
@@ -98,16 +91,16 @@ function Board({
     <>
       <div className="board-container">
         <div className="board">
-          {board.map((row) =>
-            row.map((tile) => (
+          {state.board.map((row: TileData[]) =>
+            row.map((tile: TileData) => (
               <Tile
                 key={tile.id}
                 id={tile.id}
                 hidden={
-                  !unhiddenTilesId.includes(tile.id) &&
-                  !matchedTilesId.includes(tile.id)
+                  !state.unhiddenTilesId.includes(tile.id) &&
+                  !state.matchedTilesId.includes(tile.id)
                 }
-                locked={boardLocked}
+                locked={state.boardLocked}
                 onClick={() => {
                   handleTileClick(tile.id, tile.emoji);
                 }}
