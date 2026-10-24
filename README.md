@@ -1,75 +1,95 @@
-# React + TypeScript + Vite
+# 🧠 Memory Game
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 🎮 Wyzwanie pamięciowe dla dwóch graczy
 
-Currently, two official plugins are available:
+Odkrywaj kafelki, szukaj pasujących emoji i zdobądź więcej punktów niż przeciwnik!
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+**React · TypeScript · CSS**
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## ✨ O projekcie
 
-## Expanding the ESLint configuration
+**Memory Game** to przeglądarkowa gra pamięciowa dla dwóch osób. Gracze na zmianę odkrywają kafelki na planszy 4 × 4 i próbują znaleźć pary identycznych emoji. Zwycięża osoba, która zdobędzie więcej punktów.
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Projekt powstał jako ćwiczenie praktycznego wykorzystania Reacta, TypeScriptu oraz zarządzania stanem aplikacji.
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
+## 🎯 Funkcje
 
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
+- 🧩 **Plansza 4 × 4** — 16 kafelków i 8 par emoji.
+- 🎲 **Losowe rozmieszczenie** — nowy układ przy rozpoczęciu gry.
+- 👥 **Rozgrywka dla dwóch graczy** — wyświetlanie aktualnej kolejki.
+- 🏆 **Punktacja** — punkt za każdą odnalezioną parę.
+- ⏳ **Odkrywanie kart** — niedopasowane kafelki zakrywają się po 2 sekundach.
+- 🔒 **Blokada planszy** — podczas oczekiwania nie można odkrywać kolejnych kart.
+- ✨ **Animacje** — efekty interakcji z kafelkami i zakończenia rozgrywki.
+- 🔄 **Reset gry** — nowa plansza i wyzerowana punktacja.
+- 📱 **Responsywny interfejs** — plansza dopasowuje się do dostępnej przestrzeni.
 
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🕹️ Zasady gry
 
+1. Gracz 1 odkrywa dwa kafelki.
+2. Jeśli emoji są identyczne, para pozostaje odkryta, a gracz zdobywa **1 punkt** i kontynuuje turę.
+3. Jeśli emoji są różne, kafelki pozostają widoczne przez **2 sekundy**, po czym się zakrywają. Kolej przechodzi na drugiego gracza.
+4. Gra kończy się po odnalezieniu wszystkich **8 par**.
+5. Wygrywa gracz z większą liczbą punktów. Możliwy jest również **remis**.
+
+## 🛠️ Technologie
+
+| Technologia | Zastosowanie |
+| --- | --- |
+| **React** | Komponenty i interfejs użytkownika |
+| **TypeScript** | Typowanie danych planszy, propsów i akcji |
+| **CSS** | Układ Grid, responsywność i animacje |
+| **React Hooks** | Zarządzanie stanem oraz cyklem życia logiki gry |
+
+## 🚀 Uruchomienie lokalne
+
+Potrzebujesz zainstalowanego **Node.js** i **npm**.
+
+```bash
+# Sklonuj repozytorium
+git clone https://github.com/jonkussponktt/Memory.git
+
+# Przejdź do katalogu projektu
+cd Memory
+
+# Zainstaluj zależności
+npm install
+
+# Uruchom aplikację w trybie deweloperskim
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://npmx.dev/package/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://npmx.dev/package/eslint-plugin-react-dom) for React-specific lint rules:
+Otwórz adres podany w terminalu po uruchomieniu serwera deweloperskiego.
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Lub wykorzystaj następujący link: [Netlify Memory App](https://memoryjonkussponkt.netlify.app/)
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🧱 Architektura
 
-```
+Logika rozgrywki jest oddzielona od komponentów odpowiedzialnych za jej prezentację:
+
+- **`App`** — zarządza graczami, punktacją, turami i wynikiem rozgrywki.
+- **`Board`** — renderuje planszę i jej kafelki.
+- **`Tile`** — wyświetla pojedynczy kafelek w odpowiednim stanie.
+- **`useBoard`** — custom hook z logiką odkrywania i dopasowywania kafelków.
+- **`BoardReducer`** — obsługuje przejścia między stanami planszy za pomocą akcji.
+- **`generateBoard`** — tworzy i losowo miesza pary emoji.
+- **`CurrentPlayer`, `Score`, `Result`, `ResetButton`** — prezentują informacje i akcje dostępne dla graczy.
+
+W projekcie wykorzystano m.in. `useReducer`, `useCallback`, `useRef` i obsługę timeoutów do kontrolowania przebiegu tury.
+
+## 📚 Czego uczy ten projekt?
+
+- Projektowania komponentów w React i typowania ich propsów.
+- Rozdzielania logiki biznesowej od warstwy wizualnej.
+- Modelowania stanu gry przy użyciu `useReducer`.
+- Tworzenia i używania własnych hooków.
+- Obsługi operacji asynchronicznych i czyszczenia timeoutów.
+- Budowy responsywnego interfejsu z użyciem CSS Grid.
+
+---
+
+**Miłej gry!** 🎉
+
+
