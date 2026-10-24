@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from "react";
+import { useReducer } from "react";
 import Tile from "../Tile/Tile";
 import "./Board.css";
 import {
@@ -17,14 +17,7 @@ export type BoardState = {
 
 export type BoardAction =
   | {
-      type: "reset";
-    }
-  | {
       type: "first_unhidden";
-      tileId: number;
-    }
-  | {
-      type: "second_unhidden";
       tileId: number;
     }
   | {
@@ -38,47 +31,34 @@ export type BoardAction =
 interface BoardProps {
   shouldReset: boolean;
   onMatch: () => void;
-  onReset: (cb: () => void) => void;
   onShowResult: () => void;
   onGameWon: () => void;
   onMismatch: (cb: () => void) => void;
 }
 
-const initialBoardState: BoardState = {
-  unhiddenTilesId: [],
-  matchedTilesId: [],
-  board: generateBoard(),
-  boardLocked: false,
-};
-
-function Board({
-  shouldReset,
-  onMatch,
-  onReset,
-  onShowResult,
-  onGameWon,
-  onMismatch,
-}: BoardProps) {
-  const [state, dispatch] = useReducer(BoardReducer, initialBoardState);
+function Board({ onMatch, onShowResult, onGameWon, onMismatch }: BoardProps) {
+  function createInitialBoardState(): BoardState {
+    return {
+      unhiddenTilesId: [],
+      matchedTilesId: [],
+      board: generateBoard(),
+      boardLocked: false,
+    };
+  }
+  const [state, dispatch] = useReducer(
+    BoardReducer,
+    undefined,
+    createInitialBoardState, // lazy init
+  );
 
   const tilesNumber = 16;
   const gameWon = state.matchedTilesId?.length === tilesNumber;
-  const showResult = state.matchedTilesId?.length === tilesNumber - 2;
-
-  useEffect(() => {
-    if (!shouldReset) return;
-    onReset(() => {
-      dispatch({ type: "reset" });
-    });
-  }, [shouldReset, onReset]);
-
-  if (gameWon) {
-    onGameWon();
-  }
+  const lastPair = state.matchedTilesId?.length === tilesNumber - 2;
 
   function handleMatch(tileId: number) {
-    if (showResult) {
+    if (lastPair) {
       onShowResult();
+      onGameWon();
     }
     dispatch({ type: "match", tileId, unhiddenTile: state.unhiddenTilesId[0] });
     onMatch();
@@ -91,24 +71,28 @@ function Board({
     });
   }
 
-  function handleTileClick(tileId: number, tileEmoji: string) {
-    if (state.boardLocked) {
+  function handleTileClick(tile: TileData) {
+    console.log("handleTileClick");
+    if (state.boardLocked || gameWon) {
+      console.log("early return");
       return;
     }
     // dopiero pierwsza odkryta
-    if (state.unhiddenTilesId?.length !== 1) {
-      dispatch({ type: "first_unhidden", tileId });
+    const firstTileId = state.unhiddenTilesId[0];
+    if (firstTileId === undefined) {
+      console.log("odkryta pierwsza karta");
+      dispatch({ type: "first_unhidden", tileId: tile.id });
       return;
     }
-    dispatch({ type: "second_unhidden", tileId });
 
-    const [i, j] = idToIndices(state.unhiddenTilesId[0]);
+    const [row, col] = idToIndices(firstTileId);
+    const firstTile = state.board[row][col];
     // wykryliśmy dopasowanie
-    if (state.board[i][j].emoji === tileEmoji) {
-      handleMatch(tileId);
+    if (firstTile.emoji === tile.emoji) {
+      handleMatch(tile.id);
     } else {
       // nie ma dopasowania => pokazujemy oba przez 3 sekundy a potem zasłaniamy oba
-      handleMismatch(tileId);
+      handleMismatch(tile.id);
     }
   }
 
@@ -127,7 +111,7 @@ function Board({
                 }
                 locked={state.boardLocked}
                 onClick={() => {
-                  handleTileClick(tile.id, tile.emoji);
+                  handleTileClick(tile);
                 }}
                 win={gameWon}
               >

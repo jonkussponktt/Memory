@@ -1,24 +1,15 @@
-import { generateBoard } from "../utils/generateBoard";
 import { type BoardState, type BoardAction } from "../components/Board/Board";
 
-export function BoardReducer(state: BoardState, action: BoardAction): BoardState {
+export function BoardReducer(
+  state: BoardState,
+  action: BoardAction,
+): BoardState {
   switch (action.type) {
-    case "reset":
-      return {
-        matchedTilesId: [],
-        unhiddenTilesId: [],
-        board: generateBoard(),
-        boardLocked: false,
-      };
     case "first_unhidden":
+      console.log("first_unhidden");
       return {
         ...state,
         unhiddenTilesId: [action.tileId],
-      };
-    case "second_unhidden":
-      return {
-        ...state,
-        boardLocked: true,
       };
     case "match":
       return {
@@ -35,6 +26,7 @@ export function BoardReducer(state: BoardState, action: BoardAction): BoardState
       return {
         ...state,
         unhiddenTilesId: [...state.unhiddenTilesId, action.tileId],
+        boardLocked: true,
       };
     case "mismatch_callback":
       return {

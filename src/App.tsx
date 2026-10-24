@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from "react";
+import { useState, useRef, useEffect } from "react";
 import Board from "./components/Board/Board";
 import { Score } from "./components/Score/Score";
 import ResetButton from "./components/ResetButton/ResetButton";
@@ -26,6 +26,7 @@ function App() {
   const [resultVisible, setResultVisible] = useState<boolean>(false);
   const [gameWon, setGameWon] = useState<boolean>(false);
   const [shouldReset, setShouldReset] = useState(false);
+  const [gameId, setGameId] = useState<number>(0);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
@@ -37,63 +38,68 @@ function App() {
     };
   }, []);
 
-  const resetCb = useCallback((cb: () => void) => {
+  function handleMatch() {
+    if (currentPlayerId === 1) {
+      setPlayer1State((prevPlayer1State) => {
+        return {
+          ...prevPlayer1State,
+          points: prevPlayer1State.points + 1,
+        };
+      });
+    } else {
+      setPlayer2State((prevPlayer2State) => {
+        return {
+          ...prevPlayer2State,
+          points: prevPlayer2State.points + 1,
+        };
+      });
+    }
+  }
+
+  function handleMismatch(onMismatchCb: () => void) {
+    if (timeoutRef.current !== null) {
+      clearTimeout(timeoutRef.current);
+    }
+    timeoutRef.current = setTimeout(() => {
+      timeoutRef.current = null;
+      onMismatchCb();
+      setcurrentPlayerId((prevCurrentPlayerId) =>
+        prevCurrentPlayerId === 1 ? 2 : 1,
+      );
+    }, 2000);
+  }
+
+  function handleResetClick() {
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
-      timeoutRef.current = null;
     }
-    cb();
-    setShouldReset(false);
-    setGameWon(false);
-  }, []);
+    timeoutRef.current = null;
+
+    setShouldReset(true);
+    setPlayer1State((prevPlayer1State) => {
+      return { ...prevPlayer1State, points: 0 };
+    });
+    setPlayer2State((prevPlayer2State) => {
+      return { ...prevPlayer2State, points: 0 };
+    });
+    setcurrentPlayerId(1);
+    setResultVisible(false);
+    setGameId((prevGameId) => prevGameId + 1);
+  }
 
   return (
     <>
       <div className="game-container">
         <CurrentPlayer currentPlayerId={currentPlayerId} />
         <Board
+          key={gameId}
           shouldReset={shouldReset}
-          onReset={resetCb}
-          onMatch={() => {
-            if (currentPlayerId === 1) {
-              setPlayer1State((prevPlayer1State) => {
-                return {
-                  ...prevPlayer1State,
-                  points: prevPlayer1State.points + 1,
-                };
-              });
-            } else {
-              setPlayer2State((prevPlayer2State) => {
-                return {
-                  ...prevPlayer2State,
-                  points: prevPlayer2State.points + 1,
-                };
-              });
-            }
-          }}
+          onMatch={handleMatch}
           onShowResult={() => setResultVisible(true)}
           onGameWon={() => setGameWon(true)}
-          onMismatch={(onMismatchCb: () => void) => {
-            timeoutRef.current = setTimeout(() => {
-              onMismatchCb();
-              setcurrentPlayerId((prevCurrentPlayerId) =>
-                prevCurrentPlayerId === 1 ? 2 : 1,
-              );
-            }, 2000);
-          }}
+          onMismatch={handleMismatch}
         />
-        <ResetButton
-          onClick={() => {
-            setShouldReset(true);
-            setPlayer1State((prevPlayer1State) => {
-              return { ...prevPlayer1State, points: 0 };
-            });
-            setPlayer2State((prevPlayer2State) => {
-              return { ...prevPlayer2State, points: 0 };
-            });
-          }}
-          gameWon={gameWon}
-        />
+        <ResetButton onClick={handleResetClick} gameWon={gameWon} />
         <Score
           player1Score={player1State.points}
           player2Score={player2State.points}
@@ -101,10 +107,19 @@ function App() {
         {resultVisible && (
           <Result onClick={() => setResultVisible(false)}>
             {
-              <span>
-                Gracz {player1State.points > player2State.points ? "1" : "2"}{" "}
-                wygrywa {player1State.points}:{player2State.points}
-              </span>
+              <>
+                {player1State.points === player2State.points ? (
+                  <span>
+                    Remis {player1State.points}:{player2State.points}
+                  </span>
+                ) : (
+                  <span>
+                    Gracz{" "}
+                    {player1State.points > player2State.points ? "1" : "2"}{" "}
+                    wygrywa {player1State.points}:{player2State.points}
+                  </span>
+                )}
+              </>
             }
           </Result>
         )}
