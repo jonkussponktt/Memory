@@ -1,33 +1,29 @@
-.score {
+.score-container {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 24px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
 
-  margin-bottom: 14px;
-  padding: 10px 18px;
+.score-player {
+  padding: 12px 22px;
 
-  border: 2px solid #22d3ee;
+  border: 2px solid #fbbf24;
   border-radius: 12px;
 
-  background: linear-gradient(135deg, #1e293b, #312e81);
-  color: #e0f2fe;
+  background: linear-gradient(135deg, #292524, #44403c);
+  color: #fef3c7;
 
   font-size: 1rem;
   font-weight: 700;
-  letter-spacing: 0.5px;
 
-  box-shadow:
-    0 0 10px rgba(34, 211, 238, 0.35),
-    0 4px 0 #1e1b4b;
-
-  text-align: center;
+  box-shadow: 0 0 12px rgba(251, 191, 36, 0.2);
 }
 
-.score__value {
+.score-value {
   margin-left: 6px;
-
-  color: #67e8f9;
-  font-size: 1.15rem;
+  color: #fcd34d;
+  font-size: 1.25rem;
   font-weight: 800;
 }

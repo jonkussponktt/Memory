@@ -25,7 +25,6 @@ function App() {
 
   const [resultVisible, setResultVisible] = useState<boolean>(false);
   const [gameWon, setGameWon] = useState<boolean>(false);
-  const [shouldReset, setShouldReset] = useState(false);
   const [gameId, setGameId] = useState<number>(0);
 
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -75,7 +74,6 @@ function App() {
     }
     timeoutRef.current = null;
 
-    setShouldReset(true);
     setPlayer1State((prevPlayer1State) => {
       return { ...prevPlayer1State, points: 0 };
     });
@@ -85,6 +83,7 @@ function App() {
     setcurrentPlayerId(1);
     setResultVisible(false);
     setGameId((prevGameId) => prevGameId + 1);
+    setGameWon(false);
   }
 
   return (
@@ -93,7 +92,6 @@ function App() {
         <CurrentPlayer currentPlayerId={currentPlayerId} />
         <Board
           key={gameId}
-          shouldReset={shouldReset}
           onMatch={handleMatch}
           onShowResult={() => setResultVisible(true)}
           onGameWon={() => setGameWon(true)}
