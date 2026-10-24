@@ -1,95 +1,96 @@
 # 🧠 Memory Game
 
-### 🎮 Wyzwanie pamięciowe dla dwóch graczy
+### 🎮 A Two-Player Memory Challenge
 
-Odkrywaj kafelki, szukaj pasujących emoji i zdobądź więcej punktów niż przeciwnik!
+Flip tiles, match emojis, and score more points than your opponent!
 
 **React · TypeScript · CSS**
 
+<img width="500" height="500" alt="game_preview" src="https://github.com/user-attachments/assets/b4f4dd7c-dba1-4f1a-9411-7d1f22929f9d" />
+
 ---
 
-## ✨ O projekcie
+## ✨ About the Project
 
-**Memory Game** to przeglądarkowa gra pamięciowa dla dwóch osób. Gracze na zmianę odkrywają kafelki na planszy 4 × 4 i próbują znaleźć pary identycznych emoji. Zwycięża osoba, która zdobędzie więcej punktów.
+**Memory Game** is a browser-based memory matching game for two players. Players take turns revealing tiles on a 4 × 4 board, trying to find pairs of matching emojis. The player with the most points at the end wins.
 
-Projekt powstał jako ćwiczenie praktycznego wykorzystania Reacta, TypeScriptu oraz zarządzania stanem aplikacji.
+The project was built as a hands-on exercise in React, TypeScript, and application state management.
 
-## 🎯 Funkcje
+## 🎯 Features
 
-- 🧩 **Plansza 4 × 4** — 16 kafelków i 8 par emoji.
-- 🎲 **Losowe rozmieszczenie** — nowy układ przy rozpoczęciu gry.
-- 👥 **Rozgrywka dla dwóch graczy** — wyświetlanie aktualnej kolejki.
-- 🏆 **Punktacja** — punkt za każdą odnalezioną parę.
-- ⏳ **Odkrywanie kart** — niedopasowane kafelki zakrywają się po 2 sekundach.
-- 🔒 **Blokada planszy** — podczas oczekiwania nie można odkrywać kolejnych kart.
-- ✨ **Animacje** — efekty interakcji z kafelkami i zakończenia rozgrywki.
-- 🔄 **Reset gry** — nowa plansza i wyzerowana punktacja.
-- 📱 **Responsywny interfejs** — plansza dopasowuje się do dostępnej przestrzeni.
+- 🧩 **4 × 4 board** — 16 tiles containing 8 emoji pairs.
+- 🎲 **Randomized layout** — a fresh arrangement for every new game.
+- 👥 **Two-player mode** — displays whose turn it is.
+- 🏆 **Score tracking** — earn one point for each matching pair.
+- ⏳ **Tile reveal** — unmatched tiles flip back after 2 seconds.
+- 🔒 **Board locking** — prevents additional selections while unmatched tiles are visible.
+- ✨ **Animations** — interactive tile effects and a victory animation.
+- 🔄 **Game reset** — start over with a new board and reset scores.
+- 📱 **Responsive design** — adapts the board to the available screen space.
 
-## 🕹️ Zasady gry
+## 🕹️ How to Play
 
-1. Gracz 1 odkrywa dwa kafelki.
-2. Jeśli emoji są identyczne, para pozostaje odkryta, a gracz zdobywa **1 punkt** i kontynuuje turę.
-3. Jeśli emoji są różne, kafelki pozostają widoczne przez **2 sekundy**, po czym się zakrywają. Kolej przechodzi na drugiego gracza.
-4. Gra kończy się po odnalezieniu wszystkich **8 par**.
-5. Wygrywa gracz z większą liczbą punktów. Możliwy jest również **remis**.
+1. **Player 1** reveals two tiles.
+2. If the emojis match, the tiles remain visible, the player earns **1 point**, and keeps their turn.
+3. If the emojis do not match, both tiles remain visible for **2 seconds** before being hidden again. The turn then passes to the other player.
+4. The game ends when all **8 pairs** have been found.
+5. The player with the higher score wins. A **draw** is also possible.
 
-## 🛠️ Technologie
+## 🛠️ Tech Stack
 
-| Technologia | Zastosowanie |
+| Technology | Purpose |
 | --- | --- |
-| **React** | Komponenty i interfejs użytkownika |
-| **TypeScript** | Typowanie danych planszy, propsów i akcji |
-| **CSS** | Układ Grid, responsywność i animacje |
-| **React Hooks** | Zarządzanie stanem oraz cyklem życia logiki gry |
+| **React** | Component-based user interface |
+| **TypeScript** | Type-safe board data, component props, and actions |
+| **CSS** | Grid layout, responsiveness, and animations |
+| **React Hooks** | State management and game lifecycle logic |
 
-## 🚀 Uruchomienie lokalne
+## 🚀 Getting Started
 
-Potrzebujesz zainstalowanego **Node.js** i **npm**.
+Make sure **Node.js** and **npm** are installed.
 
 ```bash
-# Sklonuj repozytorium
+# Clone the repository
 git clone https://github.com/jonkussponktt/Memory.git
 
-# Przejdź do katalogu projektu
+# Navigate to the project directory
 cd Memory
 
-# Zainstaluj zależności
+# Install dependencies
 npm install
 
-# Uruchom aplikację w trybie deweloperskim
+# Start the development server
 npm run dev
 ```
 
-Otwórz adres podany w terminalu po uruchomieniu serwera deweloperskiego.
+Open the local URL displayed in your terminal.
 
-Lub wykorzystaj następujący link: [Netlify Memory App](https://memoryjonkussponkt.netlify.app/)
+## 🧱 Architecture
 
-## 🧱 Architektura
+The game logic is separated from the components responsible for rendering the interface:
 
-Logika rozgrywki jest oddzielona od komponentów odpowiedzialnych za jej prezentację:
+- **`App`** — manages players, scores, turns, and game results.
+- **`Board`** — renders the board and its tiles.
+- **`Tile`** — displays an individual tile in its current state.
+- **`useBoard`** — a custom hook containing tile selection and matching logic.
+- **`BoardReducer`** — manages board state transitions through actions.
+- **`generateBoard`** — creates and shuffles the emoji pairs.
+- **`CurrentPlayer`, `Score`, `Result`, `ResetButton`** — display player information and available actions.
 
-- **`App`** — zarządza graczami, punktacją, turami i wynikiem rozgrywki.
-- **`Board`** — renderuje planszę i jej kafelki.
-- **`Tile`** — wyświetla pojedynczy kafelek w odpowiednim stanie.
-- **`useBoard`** — custom hook z logiką odkrywania i dopasowywania kafelków.
-- **`BoardReducer`** — obsługuje przejścia między stanami planszy za pomocą akcji.
-- **`generateBoard`** — tworzy i losowo miesza pary emoji.
-- **`CurrentPlayer`, `Score`, `Result`, `ResetButton`** — prezentują informacje i akcje dostępne dla graczy.
+The project uses React features such as `useReducer`, `useCallback`, and `useRef`, along with timeout management to control turns.
 
-W projekcie wykorzystano m.in. `useReducer`, `useCallback`, `useRef` i obsługę timeoutów do kontrolowania przebiegu tury.
+## 📚 What I Learned
 
-## 📚 Czego uczy ten projekt?
-
-- Projektowania komponentów w React i typowania ich propsów.
-- Rozdzielania logiki biznesowej od warstwy wizualnej.
-- Modelowania stanu gry przy użyciu `useReducer`.
-- Tworzenia i używania własnych hooków.
-- Obsługi operacji asynchronicznych i czyszczenia timeoutów.
-- Budowy responsywnego interfejsu z użyciem CSS Grid.
+- Building React components and typing their props with TypeScript.
+- Separating game logic from presentation components.
+- Modeling game state with `useReducer`.
+- Creating and using custom hooks.
+- Handling asynchronous behavior and cleaning up timeouts.
+- Building a responsive interface with CSS Grid.
 
 ---
 
-**Miłej gry!** 🎉
+**Have fun playing!** 🎉
 
+</div>
 
