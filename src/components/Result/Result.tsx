@@ -1,16 +1,16 @@
+import type { ReactNode } from "react";
 import "./Result.css";
 
 interface ResultProps {
-  moves: number;
   onClick: () => void;
+  children: ReactNode;
 }
 
-function Result({ onClick, moves }: ResultProps) {
+function Result({ onClick, children }: ResultProps) {
   return (
     <div className="result-overlay">
       <div className="result-modal">
-        <h2>Wygrałeś!🎉</h2>
-        <h3>Wykonałeś {moves} ruchów</h3>
+        <h2>{children}🎉</h2>
         <button className="result-button" onClick={onClick}>
           Powrót do ekranu gry
         </button>

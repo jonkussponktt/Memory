@@ -37,8 +37,8 @@ export type BoardAction =
 
 interface BoardProps {
   shouldReset: boolean;
+  onMatch: () => void;
   onReset: (cb: () => void) => void;
-  onMovesNumberChanged: () => void;
   onShowResult: () => void;
   onGameWon: () => void;
   onMismatch: (cb: () => void) => void;
@@ -53,8 +53,8 @@ const initialBoardState: BoardState = {
 
 function Board({
   shouldReset,
+  onMatch,
   onReset,
-  onMovesNumberChanged,
   onShowResult,
   onGameWon,
   onMismatch,
@@ -81,14 +81,13 @@ function Board({
       onShowResult();
     }
     dispatch({ type: "match", tileId, unhiddenTile: state.unhiddenTilesId[0] });
-    onMovesNumberChanged();
+    onMatch();
   }
 
   function handleMismatch(tileId: number) {
     dispatch({ type: "mismatch", tileId });
     onMismatch(() => {
       dispatch({ type: "mismatch_callback" });
-      onMovesNumberChanged();
     });
   }
 
